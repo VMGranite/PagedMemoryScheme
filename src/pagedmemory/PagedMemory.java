@@ -22,7 +22,6 @@ import java.util.logging.Logger;
  * @author Veronica Granite
  */
 public class PagedMemory {
-    static boolean cleared = false;
     /**
      * @param args the command line arguments
      */
@@ -49,6 +48,7 @@ public class PagedMemory {
         System.out.println("EXAMPLE: D:/Users/Veronica Granite/Documents/NetBeansProjects/PagedMemory/test/Jobs.txt");
         String path = input.nextLine();
          */
+        
         ArrayList<Integer> numbersList = new ArrayList<>();
         try {
             for (String line : Files.readAllLines(Paths.get("/Users/veronicagranite/Documents/workspace/PagedMemory/test/Jobs.txt"))) {
@@ -87,9 +87,28 @@ public class PagedMemory {
         System.out.println("Your Finalized Job List:" + jobTable);
         System.out.println("------------");
         
+        //Blank Arraylist to fill each job's PMT
         ArrayList<PMTInfo> PMT = new ArrayList<>();
-        //Process Jobs
-        while (jobTable.size() >= 0) {
+                
+        //Process Jobs until Job Table is empty
+        while (jobTable.size() > 0) {
+            
+            //Checks if jobs are done
+            for(int i = 0; i < jobTable.size(); i++){
+                /*
+                System.out.println(System.currentTimeMillis());
+                System.out.println(jobTable.get(i).getStartTime());
+                System.out.println(jobTable.get(i).getExecutionTime());
+                */
+                
+                if((jobTable.get(i).getStartTime() + jobTable.get(i).getExecutionTime()) <= System.currentTimeMillis()){
+                    resetPMT(jobTable.get(i), MMT);
+                    System.out.println("========> Job ID " + jobTable.get(i).getID() + " completed. <========");
+                    jobTable.remove(i);
+                }
+            }
+            
+            
             for(int i = 0; i < jobTable.size(); i++){
                 PMT.clear();
                 int freeMemory = checkMemoryAvailable(MMT);
@@ -117,24 +136,10 @@ public class PagedMemory {
                    jobTable.get(i).setPMT(PMT);
                    System.out.println("- JOB " + " " + i + " - \n" + jobTable.get(i));
                    System.out.println("- PMT - \n" + jobTable.get(i).displayPMT());
-                   
-                   startTimer(jobTable.get(i), MMT, i, jobTable);
+                   jobTable.get(i).setStartTime(System.currentTimeMillis());
                    Thread.sleep(1000);
-                   if(cleared){
-                        MMT.put(0, true);
-                        MMT.put(1, true);
-                        MMT.put(2, true);
-                        MMT.put(3, true);
-                        MMT.put(4, true);
-                        MMT.put(5, true);
-                        MMT.put(6, true);
-                        MMT.put(7, true);
-                        MMT.put(8, true);
-                        MMT.put(9, true);
-                   }
-                   
                 }else{
-                    System.out.println(" - There is not enough free memory at the moment. Continuing to next Job.\n");
+                    System.out.println(" - There is not enough free memory at the moment for - JOB " + jobTable.get(i) + " -. Continuing to next Job.\n");
                 }
             }
         }
@@ -167,30 +172,28 @@ public class PagedMemory {
         return toReturn;
     }
 
-   
+   /*
     public static void startTimer(Job job, Hashtable<Integer, Boolean> MMT, int jobIndex, ArrayList<Job> jobTable){
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-               cleared = resetPMT(job, MMT);
+               resetPMT(job, MMT);
                System.out.println("========> Job " + job.getID() + " completed. <========");
                jobTable.remove(jobIndex);
-//               System.out.println(isJob.toString());
+               //System.out.println(isJob.toString());
                
                
             }
-          }, (job.getExecutionTime() * 500));
-    }
-    
+          }, (job.getExecutionTime()));
+    } 
+    */
    
-     public static boolean resetPMT(Job job, Hashtable<Integer, Boolean> MMT){
+     public static void resetPMT(Job job, Hashtable<Integer, Boolean> MMT){
         for(int i = 0; i < job.getPMT().size(); i++){
             int index = job.getPMT().get(i).getPageFrameNumber();
             MMT.put(index, true);
-            //MMT.replace(index, true);
         }
-        return true;
     }
     
      

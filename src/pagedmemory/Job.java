@@ -16,6 +16,7 @@ public class Job {
     int ID;
     ArrayList<PMTInfo> PMT = new ArrayList<>();
     int executionTime;
+    long startTime;
     
     Job(int mL,int jS, int eT) {
         this.ID = mL;
@@ -23,8 +24,23 @@ public class Job {
         this.executionTime = eT;
     }
     
+    Job(int mL,int jS, int eT, long sT) {
+        this.ID = mL;
+        this.jobSize = jS; 
+        this.executionTime = eT;
+        this.startTime = sT;
+    }
+    
     public String toString(){
-        return "ID: " + ID + ", Job Size: " + jobSize + ", Execution Time: " + executionTime;
+        return "ID: " + ID + ", Job Size: " + jobSize + ", Execution Time: " + executionTime +" milliseconds";
+    }
+    
+    public void setStartTime(long sT){
+        startTime = sT;
+    }
+    
+    public long getStartTime(){
+        return startTime;
     }
     
     public int getID(){
